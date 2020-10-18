@@ -1,0 +1,323 @@
+---
+title: "Datavyur Package Tutorial"
+author: "Joseph M. Burling"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Datavyur Package Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE, results='hide', message=FALSE}
+knitr::opts_chunk$set(eval=FALSE, comment = ">", message = FALSE)
+library(datavyur)
+```
+
+
+# Basic `datavyur` usage
+
+This section will outline how to use some of the basic functions found in this package.
+To follow along, make sure you know where your `.csv` files have been saved when you ran the `datavyu2csv.rb` script to convert `.opf` columns to individual `.csv` files. If you don't have `.csv` files to work with, you can always use the default ones built into this package, as seen below in the examples.
+
+First, you need to load the `datavyur` library. Make sure it has already been installed before loading (obviously, this is already done if reading this documentation in R). If you're reading this on GitHub, go here to install:
+
+[How to install datavyur](https://github.com/iamamutt/datavyu#how-to-install)
+
+After you read through this tutorial it's a good idea to go ahead and start on the tutorial regarding an introduction to data manipulation and plotting with an empahsis on the `datavyur` package. In the packages tab in RStudio, find and click the `datavyur` link, then click "User guides, package vignetts and other documentation." This will list all available tutorials if your package has built them. See "Data Manipulation and Plotting" or paste the following into your R Console:
+
+```{r, eval=FALSE}
+vignette("data_manipulation", "datavyur")
+```
+
+## Initial setup
+
+Use the R function `library` to load the `datvyur` package after it has been installed, like so:
+
+```{r}
+# Load the datavyur library to use the functions below
+library(datavyur)
+```
+
+You have to then let R know where your `datavyur` data is at. These are specially formatted `.csv` files obtained when using the Ruby script `datavyu2csv.rb`, as seen in this tutorial:
+
+(Getting started with Datavyu)[https://github.com/iamamutt/datavyu/blob/master/tutorial/datavyu_tutorial.md]
+
+To set the default path for the data that was exported, override the default option `datavyur.folder` by doing the following in the RStudio console:
+
+```{r}
+# Replace the string path/to/data with the location to where your data is located, relative to working directory.
+options(datavyur.folder="path/to/data")
+```
+
+By default, the path is set to use the data built into this package. The code below will tell you where `datavyur` is searching for Datavyu files.
+
+```{r}
+getOption("datavyur.folder")
+```
+
+These are the default files we'll be working with if not using a custom folder.
+
+```{r, echo=FALSE, eval=TRUE}
+list.files(getOption("datavyur.folder"), pattern = "\\.csv$")
+```
+
+An alternative to setting the R option `datavyur.folder` is to create an R object that holds the path to your data folder. This is useful if working with multiple sources of data.
+
+```{r}
+# Find the full path to where the .csv files have been saved
+# Replace path/to/data with the correct path
+data_path <- normalizePath("path/to/data")
+```
+
+You can then use this path as an argument for some of the functions, like when using `import_column` or `datavyu_col_search`, as you'll see later.
+
+## Getting help 
+
+The `datavyur` package provides several utility functions to simplify the data manipulation process. In the command window you can use the `?` operator to see the manual for each function. For example, to see the manual for the `import_column` function type the following in the command window:
+
+```{r}
+# see help documentation
+?import_column
+```
+
+Type in the code below to see a list of functions available in the `datavyur` package.
+
+```{r}
+# see help documentation
+?datavyur
+```
+
+## Viewing `.opf` column and code information
+
+The function `datavyu_col_search` will search through the path you specify and find all Datavyu files that have been already exported to `.csv` files, along with their column names and other attributes.
+
+```{r}
+# if datavyur.folder option has been set
+datavyu_col_search()
+
+# otherwise use explicit folder path stored in data_path
+datavyu_col_search(data_path)
+```
+
+The function will return a `data.frame` with the following information:
+
+- **file**: the name of the original `.opf` file that the column comes from
+- **column**: the column name corresponding to the current `.csv` file
+- **args**: the arguments (codes) found in that specific column
+- **classes**: what R things the data should be classified as
+- **local**: the full path to where the `.csv` file is located
+
+
+```{r, echo=FALSE, eval=TRUE, results='asis'}
+# if datavyur.folder option has been set
+fdat <- datavyu_col_search()
+fdat$local <- "./*.csv"
+knitr::kable(head(fdat, 11))
+```
+
+
+To view only the unique column names from each file you can use the optional argument `cnames`:
+
+
+```{r, eval=TRUE}
+# if datavyur.folder option has been set
+datavyu_col_search(unq=TRUE, cnames="column")
+```
+
+Or to view both unique columns and codes in each column...
+
+
+```{r}
+# if datavyur.folder option has been set
+datavyu_col_search(unq=TRUE, cnames=c("column", "codes"))
+```
+
+```{r, echo=FALSE, eval=TRUE, results='asis'}
+knitr::kable(datavyu_col_search(unq=TRUE, cnames=c("column", "codes")))
+```
+
+
+## Importing Datavyu columns into R
+
+As previously mentioned, the Ruby script `datavyu2csv.rb` exports a `.csv` file for each column within each file. To combine them back together in R you'll use the function `import_column`. You'll need to know the path to your data again if not already set, and the exact names of the columns you're trying to import (using the `datavyu_col_search`, if you don't already know this).
+
+The code below will search the example `.csv` and look for a column(s) with a specific name, them load them into R. This is assuming the folder path has already been set above in the options. If not, use the `folder` argument from this function to a path pointing to the data folder.
+
+```{r, eval=TRUE}
+child_hands <- import_column("childhands") # or import_column("childhands", data_path)
+```
+
+partial data.frame obtained from `child_hands`:
+
+```{r, echo=FALSE, eval=TRUE, results='asis'}
+knitr::kable(head(child_hands))
+```
+
+You can also append the datavyu column name to the data using the argument `append.colnames` and setting it to `TRUE`.
+
+```{r, eval=TRUE}
+parent_hands <- import_column("parenthands", append.colnames = TRUE)
+```
+
+partial data obtained from `parent_hands` with `append.colnames = TRUE`:
+
+```{r, echo=FALSE, eval=TRUE, results='asis'}
+knitr::kable(head(parent_hands))
+```
+
+
+## Checking for invalid codes
+
+Sometimes typos or invalid codes make it into the final export. You can check which codes are invalid by using the function `check_codes`. First let us load the `childhands` column data.
+
+```{r, eval=TRUE}
+# load column "childhands" and combine across separate .opf files
+child_hands <- import_column("childhands", append.colnames = TRUE)
+```
+
+Then we can make a list of column names and valid set of codes thse columns.
+Notice that the names of each item in the list below is the exact name from one of the  columns in the data.frame `child_hands`.
+Each item in the list is a vector of valid codes that will be checked. We will then use this list for the function `check_codes`.
+
+```{r, eval=TRUE}
+# named list of valid codes, where names are extact matches of real column names
+child_hands_codes <- list(
+    childhands.hand = c("left", "right", "both"),
+    childhands.look = c(1, 0)
+    )
+
+# pass the list to the function check_codes
+checked_list <- check_codes(child_hands_codes, child_hands)
+```
+
+The result of using the `check_codes` function is a list with two items, the new data with bad codes set to `NA`, and list called `bad_codes` which for each item in `child_hands_codes$bad_codes`, will return the indices and codes that were found to be invalid.
+
+The column `childhands.hand` had the following bad codes (these are just blank spaces and one "l")
+
+```{r, eval=TRUE}
+checked_list$bad_codes$childhands.hand
+```
+
+And the column `childhands.look` had the following bad codes (a 2 was found)
+
+```{r, eval=TRUE}
+checked_list$bad_codes$childhands.look
+```
+
+Overwrite old `child_hands` data with new data after setting bad codes to `NA`.
+
+```{r, eval=TRUE}
+child_hands <- checked_list$data
+```
+
+## Checking for invalid timestamps
+
+You can also see which timestamps are invalid, such as when the onset is below a specific minimum, above a maximum, or the duration between onset and offset is invalid. This can be done with the function `check_timestamps`. To use the function, you need to create a list of onset/offset pairs based on how they are named in the data. Using the `child_hands` data from above.
+
+```{r, eval=TRUE}
+timestamps_to_check <- list(
+    c(on="childhands.onset", off="childhands.offset")
+)
+
+checked_ts <- check_timestamps(timestamps_to_check, child_hands)
+```
+
+The function returns a list of new data with bad timestamps as `NA`, a list of timestamps out of range (if specified in the arguments), and a list of timestamps with bad durations. You can access each of these by doing the following:
+
+```{r, eval=TRUE}
+# overwrite old data with new data and bad timestamps as NA
+child_hands <- checked_ts$data
+
+# see bad timestamp ranges, no min and max was specified so nothing was bad
+checked_ts$ranges
+
+# see row indices with bad durations
+checked_ts$durations
+```
+
+## Writing R Data to a `.csv` spreadsheet
+
+You can save any R `data.frame` to a spreadsheet that can be opened in Excel. You don't need the `datavyur` packages for this, and comes with standard R. You can do this for any R `data.frame`. This will write the data `child_hands` to a `.csv` file called `child_cleaned.csv`.
+
+```{r}
+write.csv(child_hands, file="child_cleaned.csv", row.names=FALSE, na="")
+```
+
+# Advanced usage
+
+## Merging nested columns
+
+If two columns are nested, in that the cells in one column are completely contained within cells from another column, you can merge two columns together using the function `merge_nested`. You just need to specify the two column names you are trying to merge. If there is some overlap, meaning the cells are not truly nested, the cells in the lower level will be discarded. It is up to you to make sure your columns are nested, otherwise use `temporal_align`.
+
+```{r, eval=TRUE}
+# merges childhands columns within parenthands columns
+my_nested_data <- merge_nested("parenthands", "childhands")
+```
+
+```{r, eval=TRUE, echo=FALSE, results='asis'}
+knitr::kable(head(my_nested_data, 15))
+```
+
+## Align data by time
+
+You can also align all the columns in your data folder by time, or for only a select few of the columns. It is best if you know the framerate of the videos, that's because to align codes by time, the `temporal_align` function converts timestamps to frame number, then matches the frames across columns and codes. Since timestamps are now frames, you'll receive a very large dataset for each file and each frame number, unless `keep.frames` is set to `FALSE`.
+
+```{r}
+t_aligned <- temporal_align()
+```
+
+
+## Align data by ordinal (cell number)
+
+If you want to align data across columns by the cell number instead of by time, you can use the function `ordinal_align`. This may be useful if the same cells are copied across multiple columns, but the timestamps don't change, and the codes in each column are different and you want to combine them into a single data set.
+
+```{r}
+# merge columns and sort by cell number
+o_aligned <- ordinal_align()
+```
+
+## R Data to Datavyu .opf
+
+If you have R data that you want to convert back into something that the Datavyu program can recognize, you can do so with the function `r2datavyu`. You just need to make sure you have the columns `onset`, and `offset` in your R data. You can pass all data frames you want to convert as a single `list` object. Each object in the list must be named (list items must have names)! Or the conversion to `.opf` will not work.
+
+```{r}
+# provide a list of data to convert
+fake_data <- datavyu_dat()
+r2datavyu(fake_data, "myexport")
+```
+
+The function above will save the file as a weirdly formatted `.csv` file, but this is something that can be used in Datavyu, but not right away. Since the Datavyu program doesn't allow you to directly import these types of `.csv` files using the GUI, you need to use a script. Luckily I have provided one for you in the `general` folder from the github repository.
+
+In Datavyu, run the script called `csv2opf.rb`. This will convert all `.csv` files (properly formmated by using the function `r2datavyu`) in a folder to `.opf` files, which can now be opened in Datavyu directly.
+
+
+# Other useful functions
+
+## Making fake data
+
+The `datavyur` package provides a function to create fake data called `datavyu_dat` to practice with some of the functions. Below I'm just creating two separate datasets using this function. This is handy for seeing how your data should be formatted if you want to save an R data back into Datavyu data.
+
+```{r}
+x <- as.data.frame(datavyu_dat(n1=25, n2=2)[[1]])
+y <- datavyu_dat(n1=2, n2=100)[[2]]
+```
+
+## Time Conversion
+
+Datavyu prints timestamps in milliseconds. You can convert this to a more readable format by using the function `ms2time`. Currently only allows for a max time of 24 hours.
+
+```{r, eval=TRUE}
+# print milliseconds to time string (one hour)
+ms2time(3600000)
+```
+
+## Timestamps to frame numbers
+
+This will convert timestamps to a frame count, and will change depending on the value of `fps`.
+
+```{r, eval=TRUE}
+ms <- 999
+ts2frame(ms, fps = 30)
+ts2frame(ms, fps = 60)
+```

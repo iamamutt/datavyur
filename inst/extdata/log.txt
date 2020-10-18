@@ -1,0 +1,66 @@
+datavyu2csv initated at: Date: 08/14/2015 Time: 22:10
+
+Found the following files:
+
+dyad1.opf
+dyad2.opf
+dyad3.opf
+
+================================================================================
+*Loading file: 'dyad1.opf'
+..Found column: childhands
+
+...Found arguments: hand, look
+
+....Writing cells to file: 'childhands__dyad1.csv'
+
+.....done with .csv file
+
+..Found column: parenthands
+
+...Found arguments: hand, look
+
+....Writing cells to file: 'parenthands__dyad1.csv'
+
+.....done with .csv file
+
+
+================================================================================
+*Loading file: 'dyad2.opf'
+..Found column: childhands
+
+...Found arguments: hand, look
+
+....Writing cells to file: 'childhands__dyad2.csv'
+
+.....done with .csv file
+
+..Found column: parenthands
+
+...Found arguments: hand, look
+
+....Writing cells to file: 'parenthands__dyad2.csv'
+
+.....done with .csv file
+
+
+================================================================================
+*Loading file: 'dyad3.opf'
+..Found column: childhands
+
+...Found arguments: hand, look
+
+....Writing cells to file: 'childhands__dyad3.csv'
+
+.....done with .csv file
+
+..Found column: parenthands
+
+...Found arguments: look
+
+....Writing cells to file: 'parenthands__dyad3.csv'
+
+.....done with .csv file
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
