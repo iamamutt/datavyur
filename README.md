@@ -82,8 +82,9 @@ library(datavyur)
 ```
 
 Next, point to a directory containing `.csv` data that has been
-previously exported using the script `datavyu2csv.rb`. The example below
-uses the internal package data directory for demonstration purposes.
+previously exported using the script `datavyu2csv.rb` (see the section
+“Exporting Datavyu `.opf` files” below). This example uses the internal
+package data directory for demonstration purposes.
 
 ``` r
 ex_data_dir <- datavyur_internal_data()
@@ -162,6 +163,21 @@ time_aligned1 <- temporal_align(folder=ex_data_dir, fps=30, columns="childhands"
 | dyad1 |           869 |                  1 |            28846 |            157944 | left            |             NaN |
 | dyad1 |           870 |                  1 |            28846 |            157944 | left            |             NaN |
 | dyad1 |           871 |                  1 |            28846 |            157944 | left            |             NaN |
+
+### Aligning by ordinal value
+
+``` r
+ord_aligned1 <- ordinal_align(folder=ex_data_dir, columns="parenthands")
+```
+
+| file  | ordinal | parenthands.onset | parenthands.offset | parenthands.hand | parenthands.look |
+|:------|--------:|------------------:|-------------------:|:-----------------|-----------------:|
+| dyad1 |       1 |             96019 |             148073 |                  |              NaN |
+| dyad1 |       2 |            323576 |             344652 | right            |                1 |
+| dyad1 |       3 |            345184 |             372673 |                  |                0 |
+| dyad1 |       4 |            392624 |             393581 | right            |              NaN |
+| dyad1 |       5 |            396504 |             435797 |                  |                1 |
+| dyad1 |       6 |            489463 |             565105 | both             |              NaN |
 
 ## Vertical alignment of Datavyu data
 

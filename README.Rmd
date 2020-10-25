@@ -90,7 +90,7 @@ This is a basic example which shows you how to import Datavyu data into R. First
 library(datavyur)
 ```
 
-Next, point to a directory containing `.csv` data that has been previously exported using the script `datavyu2csv.rb`. The example below uses the internal package data directory for demonstration purposes.
+Next, point to a directory containing `.csv` data that has been previously exported using the script `datavyu2csv.rb` (see the section "Exporting Datavyu `.opf` files" below). This example uses the internal package data directory for demonstration purposes.
 
 ```{r example_data}
 ex_data_dir <- datavyur_internal_data()
@@ -160,6 +160,16 @@ time_aligned1 <- temporal_align(folder=ex_data_dir, fps=30, columns="childhands"
 
 ```{r, echo=FALSE}
 knitr::kable(head(time_aligned1))
+```
+
+### Aligning by ordinal value
+
+```{r, warning=FALSE}
+ord_aligned1 <- ordinal_align(folder=ex_data_dir, columns="parenthands")
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(ord_aligned1))
 ```
 
 
