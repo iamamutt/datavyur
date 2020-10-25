@@ -14,7 +14,7 @@ temporal_align(fps = 30, keep_frame_num = TRUE, ...)
 horz_merge_datavyu_list(.list, .f, ..., fps = NULL)
 }
 \arguments{
-\item{...}{additional arguments passed to \code{\link[=import_content_as_list]{import_content_as_list()}}}
+\item{...}{additional arguments passed to \code{\link[=import_datavyu_to_list]{import_datavyu_to_list()}}}
 
 \item{fps}{a common framerate to use for alignment. Only set if you want to align
 temporally. If not set then it will default to ordinal alignment. For
@@ -27,7 +27,7 @@ can calculate the number of frames that overlap between two events, and if fps i
 know, you can convert this total to milliseconds.
 video.}
 
-\item{.list}{a nested list returned from \code{\link[=import_content_as_list]{import_content_as_list()}}}
+\item{.list}{a nested list returned from \code{\link[=import_datavyu_to_list]{import_datavyu_to_list()}}}
 
 \item{.f}{a function to apply to each data set before anything is done to the data.}
 }
@@ -51,8 +51,8 @@ the timestamps are converted to frame numbers based on chunking them into discre
 larger the fps, the larger the bins, and more likely two events will line up in
 time.
 
-\item \code{horz_merge_datavyu_list}: Merge a list of imported data temporally or ordinally and align horizontally by
-appending new columns to a common data set.
+\item \code{horz_merge_datavyu_list}: Merge a list of imported data temporally or ordinally
+and align horizontally by appending new columns to a common data set.
 }}
 
 \examples{
@@ -75,6 +75,6 @@ ex_data_aligned2 <- temporal_align(columns="childhands")
 
 
 # -- Align by ordinal or frame but from a list of data objects.
-.list <- import_content_as_list()
+.list <- import_datavyu_to_list()
 ord_aligned <- horz_merge_datavyu_list(.list)
 }

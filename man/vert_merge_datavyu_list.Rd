@@ -7,7 +7,7 @@
 vert_merge_datavyu_list(.list, .f, ...)
 }
 \arguments{
-\item{.list}{a nested list returned from \code{\link[=import_content_as_list]{import_content_as_list()}}}
+\item{.list}{a nested list returned from \code{\link[=import_datavyu_to_list]{import_datavyu_to_list()}}}
 
 \item{.f}{a function to apply to each data set before anything is done to the data.}
 
@@ -21,6 +21,6 @@ This will melt all data to have common column names and convert all data to
 characters except for ordinal, onset, offset.
 }
 \examples{
-.list <- import_content_as_list()
+.list <- import_datavyu_to_list()
 stacked_data <- vert_merge_datavyu_list(.list)
 }

@@ -1,59 +1,13 @@
-#' Scans all `.csv` data from a folder and checks for valid Datavyu data
-#'
-#' The function will read all exported `.opf` data in the form of several
-#' `"/column__file.csv"` files. Files will be searched based on the directory supplied
-#' to `folder`. Files are valid if they have the following columns: `file`, `column`,
-#' `onset`, `offset`, `ordinal`.
-#'
-#' @details Most functions in this package only work if you had previously used the
-#'   `datavyu2csv.rb` script to export a Datavyu file to .csv. This can be obtained from
-#'   [ruby_script_folder()].
-#' @param folder a character string corresponding to the folder path to be scanned.
-#'   Defaults to R option `datavyur.folder`, which is the example data folder that is
-#'   used internally. This can also be a character vector of file paths to import
-#'   instead of all the contents from a folder. Must be either a single folder or vector
-#'   of file paths.
-#' @param files the name of the datavyu "file" to import, as used in the original
-#'   datavyu `.opf` file. For example, a datavyu file `dyad1.opf` will have `dyad1` in
-#'   the `.csv` column "file", and if `files="dyad1"` is specified, only data from
-#'   `dyad1.opf` will be imported.
-#' @param columns similar to the `files` argument. The name of the datavyu "column" to
-#'   import, as used in the original datavyu `.opf` file.
-#' @param file_subset a character vector of file names to import instead of all contents
-#'   from a folder. `folder` is ignored if `files` is used.
-#' @param column_subset the name of the datavyu "column" to import, as used in the
-#'   original datavyu `.opf` file.
-#' @param class_overwrite a `list` of new classes to override the guessed classes when
-#'   reading in .csv data. See `colClasses` from [data.table::fread()]. Sometimes
-#'   `fread` doesn't get the right class of the imported column argument. This can
-#'   happen if you have codes in your data of several possible types. Use
-#' @param traverse search subfolders of `folder` for datavyu `.csv` files.
-#'   `class_overwrite` to override improper type settings.
-#' @return `data.frame` with all info from the located `.csv` files consisting of the
-#'   following columns:
-#'
-#'   - `column`: the name of the specific column taken the `.opf` file.
-#'
-#'   - `codes`: the argument/fields used to label each type of code in a column.
-#'
-#'   - `file`: the file name taken from the original `.opf` file.
-#'
-#'   - `local`: the path to the `.csv` file found on disk.
-#'
-#'   - `classes`: the type for the given code.
-#'
-#'   - `combined`: the column.field string to disinguish variable names.
-#'
-#'   - `old_classes`: the estimated classes for each argument/field based on `fread`.
-#' @name datavyu-data
-NULL
-
 #' @inherit datavyu-data
 get_datavyu_info <- function(folder=NULL,
                              columns=NULL,
                              files=NULL,
                              class_overwrite=NULL,
                              traverse=FALSE) {
+  if (any(folder %|% "" == datavyur_internal_data())) {
+    warning("Using internal example data instead of user data!\n", call. = FALSE)
+  }
+
   filepaths <- grep_file_vec(folder)
   filepaths <- filepaths %|% list_datavyu_files(folder, recursive=traverse)
 
@@ -64,7 +18,7 @@ get_datavyu_info <- function(folder=NULL,
       .data <- suppressWarnings(
         data.table::fread(csv, stringsAsFactors=FALSE, verbose=FALSE, showProgress=FALSE)
       )
-      
+
       if (is.null(.data) || nrow(.data) < 1L) return(NULL)
 
       vars <- names(.data)

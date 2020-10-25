@@ -2,7 +2,7 @@
 .onLoad <- function(libname, pkgname) {
   op <- options()
   dv.ops <- list(
-    datavyur.folder=datavyur_data_folder(),
+    datavyur.folder=datavyur_internal_data(),
     datavyur.classlist=list()
   )
   toset <- !(names(dv.ops) %in% names(op))

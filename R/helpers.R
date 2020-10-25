@@ -183,3 +183,8 @@ generate_ruby_opf_script <- function(directory, filename) {
   output$text <- sprintf(script_txt, output$csv, output$opf)
   output
 }
+
+verbose_msg <- function(..., .fn=message) {
+  if (!getOption("verbose")) return(NULL)
+  .fn(...)
+}

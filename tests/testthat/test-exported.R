@@ -1,6 +1,8 @@
 context("test-exported")
 
-options(datavyur.folder=datavyur_data_folder())
+options(datavyur.folder=datavyur_internal_data())
+
+file_names <- c("childhands__dyad1.csv", "parenthands__dyad1.csv")
 
 info_cols <- c(
   "column",
@@ -12,9 +14,25 @@ info_cols <- c(
   "old_classes"
 )
 
-data_cols <- c("file", "column", "ordinal", "onset", "offset", "hand", "look")
+data_cols <- c(
+  "file",
+  "column",
+  "ordinal",
+  "onset",
+  "offset",
+  "hand",
+  "look"
+)
 
-vert_cols <- c("file", "column", "field", "code", "ordinal", "onset", "offset")
+vert_cols <- c(
+  "file",
+  "column",
+  "field",
+  "code",
+  "ordinal",
+  "onset",
+  "offset"
+)
 
 data_frame_tests <- function(.data, class="data.frame", nrows=NULL, colnames=NULL) {
   expect_is(.data, class)
@@ -24,19 +42,19 @@ data_frame_tests <- function(.data, class="data.frame", nrows=NULL, colnames=NUL
 
 test_that("column search works", {
   data_frame_tests(
-    datavyu_col_search(),
+    datavyu_search(),
     nrows=29L,
     colnames=info_cols
   )
 
   data_frame_tests(
-    datavyu_col_search(files="dyad2"),
+    datavyu_search(files="dyad2"),
     nrows=10L,
     colnames=info_cols
   )
 })
 
-test_that("import datavyu main function works", {
+test_that("main datavyu import function works", {
   data_frame_tests(
     import_datavyu(columns="childhands"),
     nrows=86L,
@@ -65,6 +83,31 @@ test_that("import datavyu with file specified works", {
   )
 })
 
+test_that("import datavyu with multiple files specified works", {
+  .data <- import_datavyu(files=c("dyad1", "dyad2"))
+  expect_is(.data, "list")
+  expect_equal(length(.data), 2L)
+  data_frame_tests(
+    .data$childhands,
+    nrows=83L,
+    colnames=data_cols
+  )
+})
+
+test_that("import datavyu with multiple folder csv files works", {
+  .data <- import_datavyu(
+    folder=file.path(getOption("datavyur.folder"), file_names),
+    as_list=TRUE
+  )
+  expect_is(.data, "list")
+  expect_equal(length(.data), 2L)
+  data_frame_tests(
+    .data$parenthands,
+    nrows=50L,
+    colnames=data_cols
+  )
+})
+
 test_that("import datavyu as list works", {
   .data <- import_datavyu(columns=c("childhands", "parenthands"), as_list=TRUE)
   expect_is(.data, "list")
@@ -76,7 +119,7 @@ test_that("import datavyu as list works", {
   )
 })
 
-.list <- import_content_as_list()
+.list <- import_datavyu_to_list()
 
 test_that("vert concat works from list", {
   data_frame_tests(

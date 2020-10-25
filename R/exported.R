@@ -1,19 +1,78 @@
+# datavyu-data help documentation -------------------------------------------------
+
+#' Scans a directory for datavyur exported `.csv` data.
+#'
+#' The function will find data exported from `.opf` to `.csv` using the built-in Ruby
+#' script.
+#'
+#' @details Most functions in this package only work if you had previously used the
+#' `datavyu2csv.rb` script to export a Datavyu file to `.csv`. This script can be
+#' obtained from [ruby_script_folder()]. Exported data is in the form of several
+#' `"/column__file.csv"` files. Files will be searched based on the directory supplied
+#' to the `folder` argument. Valid files will have the following columns: `file`,
+#' `column`, `onset`, `offset`, `ordinal`, along with custom user codes as columns.
+#'
+#' @param folder Either a scalar character pointing to a directory where contents are to
+#' be scanned, or a vector of `.csv` files to import instead of all the contents found
+#' within a folder. Defaults to the R option `datavyur.folder`, which is the internal
+#' example data folder that is used throughout this package. If `folder` is a
+#' character vector of multiple `.csv` file paths, set `as_list=TRUE`.
+#' @param files The short name of the Datavyu "file" to import, as used for the original
+#' datavyu `.opf` file name. For example, a Datavyu file `dyad1.opf`, when exported
+#' using `datavyu2csv.rb`, will have in the `.csv` file `dyad1` as the value in the
+#' column "file", and if `files="dyad1"` is specified for a function, only data from
+#' `dyad1.opf` will be imported even though they may be separated as multiple `.csv`
+#' files in a folder.
+#' @param columns Similar to the `files` argument. The name of the Datavyu "column" to
+#' import, as used in the original datavyu `.opf` file.
+#' @param class_overwrite A `list` of new classes to override the guessed classes when
+#' reading in `.csv` data. See `colClasses` from [data.table::fread()]. Sometimes
+#' `fread` doesn't get the class of the imported column right. This can happen if you
+#' have "codes" in your data that can be several possible types. Use `class_overwrite`
+#' to override improper type settings.
+#' @param traverse Search subfolders of `folder` for datavyur `.csv` files.
+#'
+#' @return `data.frame` with all info from the located `.csv` files consisting of the
+#' following columns:
+#'
+#' - `column`: the name of the specific column taken the `.opf` file.
+#'
+#' - `codes`: the argument/fields used to label each type of code in a column.
+#'
+#' - `file`: the file name taken from the original `.opf` file.
+#'
+#' - `local`: the path to the `.csv` file found on disk.
+#'
+#' - `classes`: the type for the given code.
+#'
+#' - `combined`: the column.field string to distinguish variable names.
+#'
+#' - `old_classes`: the estimated classes for each argument/field based on
+#' data.table's `fread`.
+#' @name datavyu-data
+NULL
 
 # datavyu content search ----------------------------------------------------------
 
 #' @inherit datavyu-data
 #' @examples
-#' # datavyu_col_search(folder="path/to/my/exported/datavyu/data")
+#' # datavyu_search(folder="path/to/my/exported/datavyu/data")
 #'
 #' # using the package's internal data folder as an example
-#' datavyu_col_search(folder=datavyur_data_folder())
+#' datavyu_search(folder=datavyur_internal_data())
+#'
+#' # globally setting the data folder to the internal data folder
+#' options(datavyur.folder=datavyur_internal_data())
+#'
+#' # search by Datavyu column name using the globally set folder
+#' datavyu_search("parenthands")
 #' @export
-datavyu_col_search <- function(columns=NULL,
-                               files=NULL,
-                               folder=getOption("datavyur.folder"),
-                               traverse=TRUE) {
-  message(
-    "Searching within each exported .csv file for valid datavyu data...\n",
+datavyu_search <- function(columns=NULL,
+                           files=NULL,
+                           folder=getOption("datavyur.folder"),
+                           traverse=TRUE) {
+  verbose_msg(
+    "Searching within each exported .csv file for valid Datavyu data...\n",
     '  Using the folder: "', folder, '"'
   )
 
@@ -27,31 +86,30 @@ datavyu_col_search <- function(columns=NULL,
   as.data.frame(dv_info)
 }
 
-# import-contents -----------------------------------------------------------------
+# import-datavyur -----------------------------------------------------------------
 
 #' Imports Datavyu content into R
 #'
 #' @inherit datavyu-data
-#' @section Note: If the same column name was used but has a different number of datavyu
-#' codes then you will get an error unless `as_list=TRUE`. This function assumes that
-#' the .csv is structured in a way based on how the `datavyu2csv.rb` script exports
-#' data.
-#' @param as_list a logical value indicating to return a list or data frame (default).
+#' @section Note: If the same column name was used across separate `.opf` files but has
+#' a different set of datavyu codes then you will get an error unless `as_list=TRUE`.
+#'
+#' @param as_list A logical value indicating to return a list or data frame (default).
 #' @param append_colnames If `TRUE`, the column names for the returned data will be in
 #' `column.field` format, e.g., `childhands.ordinal`, instead of having the Datavyu
 #' column name in its own variable in the returned data set.
-#' @param ... additional arguments passed to [import_content_as_list()].
-#' @return See sections `import_datavyu` and `import_content_as_list` below.
+#' @param ... Additional arguments passed to [import_datavyu_to_list()].
+#'
+#' @return See sections `import_datavyu` and `import_datavyu_to_list` below.
 #'
 #' @section `import_datavyu`: Returns one of the objects below.
 #'
-#' - a single `data.frame` if a single column was found or specified with
-#' `columns="..."`.
+#' - a single [data.frame] if a single column or file was found.
 #'
-#' - a [list] of datasets where each list entry is a datavyu column if different
-#' columns are found or if `as_list=FALSE`.
+#' - a [list] of data sets if returned if different Datavyu columns are found, where
+#' each list entry is the Datavyu column.
 #'
-#' @section `import_content_as_list`: Returns a [list] with the names:
+#' @section `import_datavyu_to_list`: Returns a [list] with the names:
 #'
 #' - `data`: a nested list with files at the top layer and column data within files.
 #'
@@ -63,21 +121,23 @@ datavyu_col_search <- function(columns=NULL,
 #' import_datavyu(columns="childhands", append_colnames=TRUE)
 #' import_datavyu(columns=c("childhands", "parenthands"), as_list=TRUE)
 #'
-#' example_data_info <- datavyu_col_search(folder=datavyur_data_folder())
+#' example_data_info <- datavyu_search(folder=datavyur_internal_data())
 #' import_datavyu(files=example_data_info$file[1])
 #'
-#' data_list <- import_content_as_list()
+#' data_list <- import_datavyu_to_list()
 #' str(data_list)
-#' @name import-contents
+#' @name import-datavyur
 NULL
 
 
-#' @describeIn import-contents Import content as a `data.frame` or `list` of `data.frame` objects.
+#' @describeIn import-datavyur Import content as a `data.frame` or `list` of
+#'   `data.frame` objects.
 #' @export
 import_datavyu <- function(...,
                            as_list=FALSE,
                            append_colnames=FALSE) {
-  stacked_list <- stack_data_list(import_content_as_list(...))
+  .list <- import_datavyu_to_list(...)
+  stacked_list <- stack_data_list(.list)
 
   n_cols <- length(stacked_list$columns)
 
@@ -85,10 +145,11 @@ import_datavyu <- function(...,
 
   if (n_cols > 1L && !as_list) {
     warning(
-      "To return a data.frame, only 1 column name is allowed in `import_datavyu`. ",
-      "If needing to import more than one column you should set as_list=TRUE ",
-      "to return a list with each item in the list as one of the ",
-      "columns including all files found for that column."
+      "To return a data.frame, only 1 column name/file is allowed in ",
+      "`import_datavyu`. If needing to import more than one column you should set ",
+      "as_list=TRUE to return a list with each item in the list as one of the ",
+      "columns including all files found for that column.",
+      call.=FALSE
     )
     as_list <- TRUE
   }
@@ -101,14 +162,14 @@ import_datavyu <- function(...,
   column_sorted[[1L]]
 }
 
-#' @describeIn import-contents Import content as a nested list.
+#' @describeIn import-datavyur Imports Datavyu content as a nested list.
 #' @export
-import_content_as_list <- function(folder=getOption("datavyur.folder"),
+import_datavyu_to_list <- function(folder=getOption("datavyur.folder"),
                                    columns=NULL,
                                    files=NULL,
                                    class_overwrite=getOption("datavyur.classlist"),
                                    traverse=FALSE) {
-  message("\nSearching for formatted datavyur data...")
+  verbose_msg("\nSearching for datavyur formated files...")
   dv_info <- get_datavyu_info(
     folder=folder,
     columns=columns,
@@ -117,7 +178,7 @@ import_content_as_list <- function(folder=getOption("datavyur.folder"),
     traverse=traverse
   )
 
-  message("Importing Datavyu data into R...")
+  verbose_msg("Importing Datavyu data into R...")
   opf_filenames <- dv_info[, unique(file)]
   data_list_files <- lapply(
     opf_filenames,
@@ -132,7 +193,7 @@ import_content_as_list <- function(folder=getOption("datavyur.folder"),
           csv_file <- dv_info[file == opf & column == col, unique(local)]
 
           # import .csv
-          message("  - reading column `", col, "` from file: ", shQuote(csv_file))
+          verbose_msg("  - reading column `", col, "` from file: ", shQuote(csv_file))
           .data <- datavyu_csv_column_import(csv_file, col, dv_info)
 
           # get rid of duplicate cells
@@ -159,17 +220,13 @@ import_content_as_list <- function(folder=getOption("datavyur.folder"),
   list(data=data_list_files, contents=dv_info, order=list_info)
 }
 
-
-
 # datavyu-alignment ---------------------------------------------------------------
-
-
 
 #' Merge from a list horizontally
 #'
 #' Merge a list of imported data temporally or ordinally. This aligns data horizontally
 #' by appending and merging new columns to a common data set.
-#' @param ... additional arguments passed to [import_content_as_list()]
+#' @param ... additional arguments passed to [import_datavyu_to_list()]
 #' @examples
 #' # set folder path if needed, otherwise use default path with example data.
 #' # options(datavyur.folder="mydatafolder")
@@ -190,7 +247,7 @@ import_content_as_list <- function(folder=getOption("datavyur.folder"),
 #'
 #'
 #' # -- Align by ordinal or frame but from a list of data objects.
-#' .list <- import_content_as_list()
+#' .list <- import_datavyu_to_list()
 #' ord_aligned <- horz_merge_datavyu_list(.list)
 #' @name datavyu-alignment
 NULL
@@ -200,7 +257,7 @@ NULL
 #' meaning, but this will allow you to append columns within a single data set.
 #' @export
 ordinal_align <- function(...) {
-  data_list <- import_content_as_list(...)
+  data_list <- import_datavyu_to_list(...)
   dat <- horz_merge_datavyu_list(data_list, fps=NULL)
   as.data.frame(dat)
 }
@@ -222,7 +279,7 @@ ordinal_align <- function(...) {
 #' video.
 #' @export
 temporal_align <- function(fps=30, keep_frame_num=TRUE, ...) {
-  data_list <- import_content_as_list(...)
+  data_list <- import_datavyu_to_list(...)
   dat <- horz_merge_datavyu_list(data_list, fps=fps)
 
   if (!keep_frame_num) {
@@ -240,7 +297,7 @@ temporal_align <- function(fps=30, keep_frame_num=TRUE, ...) {
 #' This will melt all data to have common column names and convert all data to
 #' characters except for ordinal, onset, offset.
 #'
-#' @param .list a nested list returned from [import_content_as_list()]
+#' @param .list a nested list returned from [import_datavyu_to_list()]
 #' @param .f a function to apply to each data set before anything is done to the data.
 #' @param ... additional arguments passed to `.f`
 #'
@@ -248,7 +305,7 @@ temporal_align <- function(fps=30, keep_frame_num=TRUE, ...) {
 #' @export
 #'
 #' @examples
-#' .list <- import_content_as_list()
+#' .list <- import_datavyu_to_list()
 #' stacked_data <- vert_merge_datavyu_list(.list)
 vert_merge_datavyu_list <- function(.list, .f, ...) {
   if (missing(.f)) .f <- pass
@@ -263,7 +320,9 @@ vert_merge_datavyu_list <- function(.list, .f, ...) {
       fields <- vars[!vars %in% static]
 
       types <- valid_types(sapply(.dt[, fields, with=FALSE], typeof))
-      if (any(is.na(types))) stop("columns must be either double or character")
+      if (any(is.na(types))) {
+        stop("columns must be either double or character", call.=FALSE)
+      }
 
       strings <- fields[types == "character"]
       numbers <- fields[types %in% c("double", "numeric")]
@@ -317,8 +376,8 @@ vert_merge_datavyu_list <- function(.list, .f, ...) {
 }
 
 
-#' @describeIn datavyu-alignment Merge a list of imported data temporally or ordinally and align horizontally by
-#' appending new columns to a common data set.
+#' @describeIn datavyu-alignment Merge a list of imported data temporally or ordinally
+#'   and align horizontally by appending new columns to a common data set.
 #' @inheritParams temporal_align
 #' @inheritParams vert_merge_datavyu_list
 #' @return a data.table with aligned data.
@@ -330,7 +389,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
   }
 
   if (!is_named_list(.list$data)) {
-    stop("each entry in data list must be a named list of .opf filenames")
+    stop("each entry in data list must be a named list of .opf filenames", call.=FALSE)
   }
 
   if (missing(.f)) .f <- pass
@@ -350,7 +409,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
       return(NULL)
     }
     if (!is_named_list(col_data)) {
-      stop("each sub entry in each .opf file must be a named list of column names")
+      stop("each sub entry in each .opf file must be a named list of column names", call.=FALSE)
     }
 
     to_merge <- Map(
@@ -383,7 +442,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
     unique(merged)
   })
 
-  message("\nMerging all .opf files")
+  verbose_msg("\nMerging all .opf files")
 
   # some files may not have all the necessary codes. add them if necessary
   if (by_ord) {
@@ -410,7 +469,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
   opf_merged <- opf_merged[(!na_rows),]
   opf_merged <- opf_merged[order(get(key_cols)),]
   opf_merged <- sort_datavyu_colnames(opf_merged, dv_info)
-  message("Merge successful!")
+  verbose_msg("Merge successful!")
   as.data.frame(opf_merged)
 }
 
@@ -467,7 +526,6 @@ merge_nested <- function(outer_col, inner_col, ...) {
 }
 
 # misc. exported ------------------------------------------------------------------
-
 
 #' R data to Datavyu .csv file
 #'
@@ -632,8 +690,8 @@ is_NA <- function(x) {
 #' @export
 #'
 #' @examples
-#' datavyur_data_folder()
-datavyur_data_folder <- function() {
+#' datavyur_internal_data()
+datavyur_internal_data <- function() {
   system.file("extdata", package="datavyur", mustWork=TRUE)
 }
 
