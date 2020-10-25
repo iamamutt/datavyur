@@ -84,7 +84,7 @@ For example, you may have several files with multiple "columns" in each file, an
 
 This is a basic example which shows you how to import Datavyu data into R.
 
-```{r example}
+```{r example, eval=FALSE}
 # Load the datavyur library to use the functions below
 library(datavyur)
 ```
