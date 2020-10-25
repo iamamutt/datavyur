@@ -2,7 +2,7 @@
 % Please edit documentation in R/exported.R
 \name{r2datavyu}
 \alias{r2datavyu}
-\title{R data to Datavyu .csv file}
+\title{R data to Datavyu \code{.csv} file}
 \usage{
 r2datavyu(rlist, directory = ".", filename = "datavyur_export")
 }

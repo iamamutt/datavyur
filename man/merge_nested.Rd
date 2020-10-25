@@ -22,7 +22,7 @@ Since data is nested, this will repeat rows from the higher level data. If any c
 in the lower level is not within a cell in the higher level, it will not be in the
 final data set. This function is to be used only with truly nested data. For finer
 control over potentially overlapping cells see \code{\link[=temporal_align]{temporal_align()}} with the
-option \code{keep.frames=FALSE} and a high value for \code{fps} for better precision
+option \code{keep_frame_num=FALSE} and a high value for \code{fps} for better precision
 in aligning timestamps.
 }
 \examples{

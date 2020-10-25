@@ -482,7 +482,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
 #' in the lower level is not within a cell in the higher level, it will not be in the
 #' final data set. This function is to be used only with truly nested data. For finer
 #' control over potentially overlapping cells see [temporal_align()] with the
-#' option `keep.frames=FALSE` and a high value for `fps` for better precision
+#' option `keep_frame_num=FALSE` and a high value for `fps` for better precision
 #' in aligning timestamps.
 #'
 #' @param outer_col top level column name as a character, (e.g., trial or block)
@@ -527,7 +527,7 @@ merge_nested <- function(outer_col, inner_col, ...) {
 
 # misc. exported ------------------------------------------------------------------
 
-#' R data to Datavyu .csv file
+#' R data to Datavyu `.csv` file
 #'
 #' Process to transfer R data to Datavyu
 #'
