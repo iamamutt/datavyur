@@ -42,58 +42,140 @@ It is important to understand the parts of one or more Datavyu files to understa
 - datavyu files
   - column names
     - cells
-      - standard fields
-      - custom codes
+      - standard fields <value>
+      - custom fields <code>
 
-For example, you may have several files with multiple "columns" in each file, and in each column have the standard `onset`, `offset`, and `ordinal` fields, along with custom codes that hold values.
+For example, you may have several Datavyu files with multiple "columns" in each file, and in each column exists the standard `onset`, `offset`, and `ordinal` fields and their values, along with custom fields that hold their "codes."
 
 ```
 |datavyu_file1.opf
 |- column_name1
 |  |- cell
-|     |- onset <value>
-|     |- offset <value>
-|     |- ordinal <value>
-|     |- custom_code_name1 <value>
-|     |- custom_code_name2 <value>
+|     |- onset <ts>
+|     |- offset <ts>
+|     |- ordinal <int>
+|     |- custom_code_id1 <code>
+|     |- custom_code_id2 <code>
 |  |- cell
-|     |- onset <value>
-|     |- offset <value>
-|     |- ordinal <value>
-|     |- custom_code_name1 <value>
-|     |- custom_code_name2 <value>
+|     |- onset <ts>
+|     |- offset <ts>
+|     |- ordinal <int>
+|     |- custom_code_id1 <code>
+|     |- custom_code_id2 <code>
 |  |- ...
 |- column_name2
 |  |- cell
-|     |- onset <value>
-|     |- offset <value>
-|     |- ordinal <value>
-|     |- custom_code_name1 <value>
-|     |- custom_code_name2 <value>
+|     |- onset <ts>
+|     |- offset <ts>
+|     |- ordinal <int>
+|     |- custom_code_id1 <code>
+|     |- custom_code_id2 <code>
 |  |- ...
 |datavyu_file2.opf
 |- column_name1
 |  |- ...
 |- column_name2
 |  |- ...
+|...
 ```
 
 
 ## Example
 
 
-This is a basic example which shows you how to import Datavyu data into R.
+This is a basic example which shows you how to import Datavyu data into R. First, load the package.
 
-```{r example, eval=FALSE}
+```{r load_pkg}
 # Load the datavyur library to use the functions below
 library(datavyur)
 ```
 
+Next, point to a directory containing `.csv` data that has been previously exported using the script `datavyu2csv.rb`. The example below uses the internal package data directory for demonstration purposes.
 
+```{r example_data}
+ex_data_dir <- datavyur_internal_data()
+```
+
+```{r, echo=FALSE, warning=FALSE}
+dv_info <- datavyu_search(folder=ex_data_dir)
+```
+
+The folder `ex_data_dir` originally contained `r length(unique(dv_info$file))` `.opf` files that have been split into `r length(unique(dv_info$local))` separate `.csv` files, one `.csv` file for each Datavyu file (`.opf`) and column combination.
+
+Names of `.csv` files after using the Ruby script `datavyu2csv.rb`:
+
+```{r, echo=FALSE}
+list.files(ex_data_dir, pattern="\\.csv$")
+```
+
+Names of the original Datavyu `.opf` files:
+
+```{r, echo=FALSE}
+unique(dv_info$file)
+```
+Names of the Datavyu columns found inside the set of exported `.csv` files:
+
+```{r, echo=FALSE}
+unique(dv_info$column)
+```
+
+This information can be obtained by using the function `datavyu_search`.
+
+```{r, eval=FALSE}
+datavyu_search(folder=ex_data_dir)
+```
+
+Use the `import_datavyu` function to import Datavyu columns into R as separate `data.frames`.
+Since there are multiple Datavyu columns that need to be imported from `ex_data_dir`, set `as_list=TRUE` to import a `data.frame` for each Datavyu column.
+
+```{r, warning=FALSE}
+dv_columns <- import_datavyu(folder=ex_data_dir, as_list=TRUE)
+```
+
+You can access each `data.frame` like so:
+
+```{r}
+child_data <- dv_columns$childhands
+```
+
+The first few rows are shown below.
+
+```{r, echo=FALSE}
+knitr::kable(head(child_data))
+```
+
+## Horizontal alignment of Datavyu data
+
+```{r, warning=FALSE}
+main_list <- import_datavyu_to_list()
+```
+
+### Aligning data by timestamp
+
+To align data found in the folder `ex_data_dir` use the function `temporal_align`.
+
+```{r, warning=FALSE}
+time_aligned1 <- temporal_align(folder=ex_data_dir, fps=30, columns="childhands")
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(time_aligned1))
+```
+
+
+## Vertical alignment of Datavyu data
+
+To stack several Datavyu columns' data vertically, use the function `vert_merge_datavyu_list`. This will convert all codes to characters so that they're able to exist in a single column.
+
+```{r}
+vert_data <- vert_merge_datavyu_list(main_list)
+```
+
+```{r, echo=FALSE}
+knitr::kable(rbind(head(vert_data), tail(vert_data)))
+```
 
 ## Exporting Datavyu `.opf` files
 
 
 ## Importing R data into Datavyu
-
-
