@@ -1,16 +1,30 @@
 Package: datavyur
-Type: Package
-Title: Functions to handle Datavyu data
-Version: 1.0.2
-Date: 2016-05-12
-Authors@R: person("Joseph", "Burling", email = "josephburling@gmail.com", role = c("aut", "cre"))
+Version: 1.1.0
+Title: A package for working with Datavyu data
 Description: A set of functions to handle import/export between R and Datavyu
+Date: 2020-10-18
+Authors@R:
+    c(person(
+        "Joseph M.", "Burling", ,
+        "josephburling@gmail.com",
+        c("aut", "cre")),
+      person(
+        "Joshua", "Rosenberg", ,
+        "jmrosenberg@utk.edu",
+        c("aut")))
 License: MIT
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.0.0)
 Imports:
     data.table
-Roxygen: list(wrap = FALSE)
 Suggests:
     knitr,
-    dplyr
+    dplyr,
+    testthat
+SystemRequirements:
+    datavyu
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 7.1.1
+Roxygen: list(markdown=TRUE)
