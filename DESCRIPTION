@@ -1,18 +1,18 @@
 Package: datavyur
 Version: 1.1.0
 Title: A package for working with Datavyu data
-Description: A set of functions to handle import/export between R and Datavyu
+Description: A set of functions to handle import/export between R and Datavyu.
 Date: 2020-10-18
 Authors@R:
     c(person(
         "Joseph M.", "Burling", ,
-        "josephburling@gmail.com",
+        "alexlishinski@gmail.com",
         c("aut", "cre")),
       person(
         "Joshua", "Rosenberg", ,
         "jmrosenberg@utk.edu",
         c("aut")))
-License: MIT
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends:

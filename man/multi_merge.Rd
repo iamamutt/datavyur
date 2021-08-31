@@ -18,9 +18,11 @@ A data.frame/data.table, depending on the input data in the list
 Merge data into a single data structure from a list of data.frames/tables
 }
 \examples{
+\dontrun{
 d1 <- fake_datavyu_data()$parenthands
 d2 <- as.data.frame(fake_datavyu_data()$childhands)
 d3 <- fake_datavyu_data(n2=50)$parenthands
 data_list <- list(d1, d2, d3)
 merged_data <- multi_merge(data_list, all=TRUE)
+}
 }

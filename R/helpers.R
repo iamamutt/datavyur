@@ -14,6 +14,7 @@ pass <- function(x, ...) x
 
 # will rename columns numerically if duplicates exist
 check_duplicated_code_fields <- function(.data, to_check=NULL) {
+  
   if (is.null(to_check)) {
     to_check <- names(default_csv_names())
     to_check <- to_check[to_check != "column"]
@@ -26,7 +27,7 @@ check_duplicated_code_fields <- function(.data, to_check=NULL) {
       others <- which(has_file_cols)[-1]
       dt_names[others] <- paste0(col, seq_along(others))
       names(.data) <- dt_names
-      warning(col, " code field used in ", na.omit(.data[[col]])[1L], call.=FALSE)
+      warning(col, " code field used in ", stats::na.omit(.data[[col]])[1L], call.=FALSE)
     }
   }
   .data
@@ -80,10 +81,12 @@ is_named_list <- function(x) {
 
 # range and duration subfunctions
 range_conditions <- function(x) {
+  tmin <- tmax <- NULL
   (x >= tmin & x <= tmax) # & !is.na(x)
 }
 
 duration_condition <- function(x, y) {
+  tmin <- tmax <- NULL
   z <- y - x
   z >= 0 & abs(z) <= tmax - tmin
 }
@@ -107,6 +110,7 @@ as_dtbl <- function(.data, copy=FALSE, keys) {
 }
 
 grab_within <- function(.file, .column, .onset, .offset, .data) {
+  onset <- offset <- NULL
   .data <- .data[file == .file & onset >= .onset & offset < .offset,]
   .data[, `:=`(file=NULL)]
   glue_codes_to_names(.data, .column, except="file")
@@ -123,11 +127,13 @@ grab_within <- function(.file, .column, .onset, .offset, .data) {
 #' @return A data.frame/data.table, depending on the input data in the list
 #'
 #' @examples
+#' \dontrun{
 #' d1 <- fake_datavyu_data()$parenthands
 #' d2 <- as.data.frame(fake_datavyu_data()$childhands)
 #' d3 <- fake_datavyu_data(n2=50)$parenthands
 #' data_list <- list(d1, d2, d3)
 #' merged_data <- multi_merge(data_list, all=TRUE)
+#' }
 multi_merge <- function(data_list, ...) {
   Reduce(function(x, y) {
     merge(x, y, ...)

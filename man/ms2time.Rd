@@ -7,7 +7,7 @@
 ms2time(timestamps)
 }
 \arguments{
-\item{timestamp}{A numeric time duration in \strong{milliseconds}, such as \code{6000}ms
+\item{timestamps}{A numeric time duration in \strong{milliseconds}, such as \code{6000}ms
 representing six seconds.}
 }
 \description{

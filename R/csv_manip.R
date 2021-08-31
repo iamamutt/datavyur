@@ -50,6 +50,7 @@ glue_codes_to_names <- function(.data, column, except=NA_character_) {
 }
 
 sort_datavyu_colnames <- function(.data, dv_info=NULL) {
+  cord <- codes <- column <- NULL
   vars <- names(.data)
 
   if (is.null(dv_info)) {
@@ -79,7 +80,7 @@ sort_datavyu_colnames <- function(.data, dv_info=NULL) {
     )
   }
 
-  var_reorder <- vars[na.omit(match(arg_order, vars))]
+  var_reorder <- vars[stats::na.omit(match(arg_order, vars))]
   var_reorder <- unique(c(var_reorder, vars[!vars %in% var_reorder]))
   data.table::setcolorder(.data, var_reorder)
   .data
@@ -111,18 +112,20 @@ get_missing_value <- function(type) {
 
 # check for missing code fields from a specific data set of a datavyu column/variable
 append_missing_code_cols <- function(.data, dv_info) {
+  column <- codes <- classes <- NULL
+  
   vnames <- names(.data)
 
   if ("column" %in% vnames) {
     .data[, column := NULL]
   }
 
-  need_add <- unique(dv_info[!codes %in% vnames, .(column, codes, classes)])
+  need_add <- unique(dv_info[!codes %in% vnames, list(column, codes, classes)])
 
   # add code columns if missing from specific data set
   n_to_add <- nrow(need_add)
   if (n_to_add > 0L) {
-    check_multi_cols <- need_add[, .(N=length(unique(column))), .(codes)]
+    check_multi_cols <- need_add[, list(N=length(unique(column))), list(codes)]
     if (any(check_multi_cols$N > 1L)) {
       stop(
         "Identical codes found for multiple columns. ",
@@ -195,6 +198,8 @@ make_list_of_diff_columns <- function(stacked_list, append_column_names) {
 }
 
 bind_list_of_same_columns <- function(col_list, col, append_column_names) {
+  ordinal <- onset <- offset <- column <- NULL
+  
   check_colnames_match(col_list)
   bounded <- rbindlist(col_list, fill=TRUE)
   bounded <- bounded[order(file, ordinal, onset, offset)]

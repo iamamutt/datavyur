@@ -113,7 +113,7 @@ datavyu_search <- function(columns=NULL,
 #'
 #' - `data`: a nested list with files at the top layer and column data within files.
 #'
-#' - `contents`: a `data.table` with the same contents from [datayu_col_search()].
+#' - `contents`: a `data.table` with the same contents from [datavyu_search()].
 #'
 #' - `order`: The order of files and columns nested within `$data`.
 #' @examples
@@ -169,6 +169,7 @@ import_datavyu_to_list <- function(folder=getOption("datavyur.folder"),
                                    files=NULL,
                                    class_overwrite=getOption("datavyur.classlist"),
                                    traverse=FALSE) {
+  column <- file_col <- NULL
   verbose_msg("\nSearching for datavyur formated files...")
   dv_info <- get_datavyu_info(
     folder=folder,
@@ -228,6 +229,7 @@ import_datavyu_to_list <- function(folder=getOption("datavyur.folder"),
 #' by appending and merging new columns to a common data set.
 #' @param ... additional arguments passed to [import_datavyu_to_list()]
 #' @examples
+#' \dontrun{
 #' # set folder path if needed, otherwise use default path with example data.
 #' # options(datavyur.folder="mydatafolder")
 #'
@@ -249,6 +251,7 @@ import_datavyu_to_list <- function(folder=getOption("datavyur.folder"),
 #' # -- Align by ordinal or frame but from a list of data objects.
 #' .list <- import_datavyu_to_list()
 #' ord_aligned <- horz_merge_datavyu_list(.list)
+#' }
 #' @name datavyu-alignment
 NULL
 
@@ -279,6 +282,7 @@ ordinal_align <- function(...) {
 #' video.
 #' @export
 temporal_align <- function(fps=30, keep_frame_num=TRUE, ...) {
+  frame_number <- NULL
   data_list <- import_datavyu_to_list(...)
   dat <- horz_merge_datavyu_list(data_list, fps=fps)
 
@@ -308,6 +312,7 @@ temporal_align <- function(fps=30, keep_frame_num=TRUE, ...) {
 #' .list <- import_datavyu_to_list()
 #' stacked_data <- vert_merge_datavyu_list(.list)
 vert_merge_datavyu_list <- function(.list, .f, ...) {
+  code <- ordinal <- onset <- offset <- field <- column <- NULL
   if (missing(.f)) .f <- pass
 
   file_data <- .list$data
@@ -383,6 +388,7 @@ vert_merge_datavyu_list <- function(.list, .f, ...) {
 #' @return a data.table with aligned data.
 #' @export
 horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
+  codes <- NULL
   if (missing(.list) || is_none(.list)) {
     warning(".list is missing or no data found in .list argument", call.=FALSE)
     return(invisible())
@@ -467,7 +473,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
   )
 
   opf_merged <- opf_merged[(!na_rows),]
-  opf_merged <- opf_merged[order(get(key_cols)),]
+  opf_merged <- opf_merged[order(get("key_cols")),]
   opf_merged <- sort_datavyu_colnames(opf_merged, dv_info)
   verbose_msg("Merge successful!")
   as.data.frame(opf_merged)
@@ -490,6 +496,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
 #' trial)
 #' @param ... additional parameters passed to [import_datavyu()].
 #' @examples
+#' \dontrun{
 #' # merge nested data, throwing away lower level cells that
 #' # are not within higher level cells
 #' merged <- merge_nested("childhands", "parenthands")
@@ -502,8 +509,10 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
 #'   fps=30,
 #'   keep.frames=FALSE
 #' )
+#' }
 #' @export
 merge_nested <- function(outer_col, inner_col, ...) {
+  onset <- offset <- NULL
   # grab upper and lower level data
   dat_list <- import_datavyu(
     columns=c(outer_col, inner_col),
@@ -725,11 +734,11 @@ fake_datavyu_data <- function(n1=10L, n2=15L) {
   n2 <- as.integer(max(1L, n2))
 
   max_ts <- 3600000L
-  pr_on <- sort(round(runif(n2, 0, max_ts)))
-  pr_off <- abs(round(runif(n2, pr_on + 1, c(pr_on[2:n2] - 1, max_ts))))
+  pr_on <- sort(round(stats::runif(n2, 0, max_ts)))
+  pr_off <- abs(round(stats::runif(n2, pr_on + 1, c(pr_on[2:n2] - 1, max_ts))))
 
-  ch_on <- sort(round(runif(n1, 0, max_ts)))
-  ch_off <- abs(round(runif(n1, ch_on + 1, c(ch_on[2:n1] - 1, max_ts))))
+  ch_on <- sort(round(stats::runif(n1, 0, max_ts)))
+  ch_off <- abs(round(stats::runif(n1, ch_on + 1, c(ch_on[2:n1] - 1, max_ts))))
 
   hand_char <- c("left", "right", "both", "")
   look_val <- c("0", "1", "")
@@ -758,7 +767,7 @@ fake_datavyu_data <- function(n1=10L, n2=15L) {
 #' This will take a duration of time in milliseconds and convert it to the time string
 #' format used by Datavyu.
 #'
-#' @param timestamp A numeric time duration in **milliseconds**, such as `6000`ms
+#' @param timestamps A numeric time duration in **milliseconds**, such as `6000`ms
 #' representing six seconds.
 #' @examples
 #' # 1102013 = 18 minutes and 22 seconds and 13 milliseconds
@@ -847,6 +856,7 @@ ts2frame <- function(x, fps=30, tstart=0L, tend=NULL, as_ts=FALSE, warn=TRUE) {
 #' my_data2 <- data.frame(onset=c(-1, 0), offset=c(100, 125), x=c(".", "-"))
 #' framerate_expand(my_data2, 30)
 framerate_expand <- function(.data, fps, keep_ts=TRUE) {
+  onset <- offset <- ._row_index <- ._onset_f <- ._offset_f <- NULL
   if (missing(fps) || is_none(fps)) {
     stop("Need frames per second argument `fps` to expand onset/offset.")
   }
@@ -860,12 +870,12 @@ framerate_expand <- function(.data, fps, keep_ts=TRUE) {
   )]
 
   # index column for merging
-  dtbl[, ._row_index := .GRP, .(._onset_f, ._offset_f)]
+  dtbl[, ._row_index := .GRP, list(._onset_f, ._offset_f)]
 
   # do the frame expansion
   frame_data <- dtbl[
     !(is.na(._onset_f) | is.na(._offset_f)),
-    .(frame_number=on_off_to_seq(min(._onset_f), max(._offset_f))), .(._row_index)
+    list(frame_number=on_off_to_seq(min(._onset_f), max(._offset_f))), list(._row_index)
   ]
 
   dtbl <- merge(dtbl, frame_data, by="._row_index", all.x=TRUE)

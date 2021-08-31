@@ -4,6 +4,7 @@ get_datavyu_info <- function(folder=NULL,
                              files=NULL,
                              class_overwrite=NULL,
                              traverse=FALSE) {
+  column <- NULL
   if (any(folder %|% "" == datavyur_internal_data())) {
     warning("Using internal example data instead of user data!\n", call. = FALSE)
   }
@@ -84,13 +85,14 @@ grep_file_vec <- function(files) {
 
 opf_file_subset <- function(.data, files) {
   if (missing(files)) return(.data)
-  files <- na.omit(unique(files))
+  files <- stats::na.omit(unique(files))
   if (is_none(files)) return(.data)
   .data <- as.data.table(.data)
   .data[file %in% files, ]
 }
 
 column_info_and_subset <- function(.data, col_subset, check_single=FALSE) {
+  column <- NULL
   .data <- as.data.table(.data)
   if (!"column" %in% names(.data)) stop(".data contains no variable `column`")
   if (!missing(col_subset) && !is_none(col_subset)) {
@@ -103,7 +105,7 @@ column_info_and_subset <- function(.data, col_subset, check_single=FALSE) {
     .data <- .data[(which_rows), ]
   }
   if (check_single) {
-    unq_cols <- .data[, na.omit(unique(column))]
+    unq_cols <- .data[, stats::na.omit(unique(column))]
     if (length(unq_cols) > 1L) {
       stop("`dv_info` must return a single datavyu variable")
     }
@@ -120,8 +122,9 @@ valid_types <- function(x) {
 }
 
 normalize_code_types <- function(dv_info) {
+  column <- codes <- classes <- N <- combined <- NULL
   type_counts <- dv_info[, .N, by=list(column, codes, classes)]
-  type_counts <- type_counts[, .(classes=classes[which.max(N)]), by=list(column, codes)]
+  type_counts <- type_counts[, list(classes=classes[which.max(N)]), by=list(column, codes)]
   type_counts[, classes := valid_types(classes)]
   type_counts[is.na(classes), classes := "character"]
   dv_info[, classes := NULL]
@@ -131,6 +134,7 @@ normalize_code_types <- function(dv_info) {
 }
 
 type_override_info <- function(dv_info, class_overwrite) {
+  old_classes <- classes <- combined <- NULL
   dv_info <- as.data.table(dv_info)
   dv_info[, old_classes := classes]
 
@@ -156,6 +160,7 @@ type_override_info <- function(dv_info, class_overwrite) {
 }
 
 dv_info_no_file <- function(dv_info) {
+  classes <- column <- codes <- combined <- NULL
   dv <- as.data.table(dv_info)[order(classes, column, codes)]
-  unique(dv[, .(combined, column, codes, classes)])
+  unique(dv[, list(combined, column, codes, classes)])
 }

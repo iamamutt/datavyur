@@ -26,6 +26,7 @@ option \code{keep_frame_num=FALSE} and a high value for \code{fps} for better pr
 in aligning timestamps.
 }
 \examples{
+\dontrun{
 # merge nested data, throwing away lower level cells that
 # are not within higher level cells
 merged <- merge_nested("childhands", "parenthands")
@@ -38,4 +39,5 @@ y <- temporal_align(
   fps=30,
   keep.frames=FALSE
 )
+}
 }

@@ -90,7 +90,7 @@ each list entry is the Datavyu column.
  Returns a \link{list} with the names:
 \itemize{
 \item \code{data}: a nested list with files at the top layer and column data within files.
-\item \code{contents}: a \code{data.table} with the same contents from \code{\link[=datayu_col_search]{datayu_col_search()}}.
+\item \code{contents}: a \code{data.table} with the same contents from \code{\link[=datavyu_search]{datavyu_search()}}.
 \item \code{order}: The order of files and columns nested within \verb{$data}.
 }
 }

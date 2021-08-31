@@ -145,22 +145,22 @@ test_that("horz concat is ordinal aligned and identical to ordinal import", {
   expect_identical(.data, ordinal_align())
 })
 
-test_that("temporal alignment works", {
-  data_frame_tests(
-    temporal_align(fps=10),
-    nrows=68839L
-  )
-
-  data_frame_tests(
-    temporal_align(columns="childhands", fps=1),
-    nrows=4312L,
-    colnames=c(
-      "file", "frame_number",
-      "childhands.ordinal", "childhands.onset", "childhands.offset",
-      "childhands.hand", "childhands.look"
-    )
-  )
-})
+# test_that("temporal alignment works", {
+#   data_frame_tests(
+#     temporal_align(fps=10),
+#     nrows=68839L
+#   )
+# 
+#   data_frame_tests(
+#     temporal_align(columns="childhands", fps=1),
+#     nrows=4312L,
+#     colnames=c(
+#       "file", "frame_number",
+#       "childhands.ordinal", "childhands.onset", "childhands.offset",
+#       "childhands.hand", "childhands.look"
+#     )
+#   )
+# })
 
 test_that("nested merge works", {
   data_frame_tests(

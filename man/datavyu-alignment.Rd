@@ -56,6 +56,7 @@ and align horizontally by appending new columns to a common data set.
 }}
 
 \examples{
+\dontrun{
 # set folder path if needed, otherwise use default path with example data.
 # options(datavyur.folder="mydatafolder")
 
@@ -77,4 +78,5 @@ ex_data_aligned2 <- temporal_align(columns="childhands")
 # -- Align by ordinal or frame but from a list of data objects.
 .list <- import_datavyu_to_list()
 ord_aligned <- horz_merge_datavyu_list(.list)
+}
 }
