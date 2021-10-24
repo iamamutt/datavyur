@@ -473,7 +473,7 @@ horz_merge_datavyu_list <- function(.list, .f, ..., fps=NULL) {
   )
 
   opf_merged <- opf_merged[(!na_rows),]
-  opf_merged <- opf_merged[order(get("key_cols")),]
+  data.table::setorderv(opf_merged, key_cols)
   opf_merged <- sort_datavyu_colnames(opf_merged, dv_info)
   verbose_msg("Merge successful!")
   as.data.frame(opf_merged)
