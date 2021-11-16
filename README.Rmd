@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of datavyur is to ...
+The goal of datavyur is to provide set of functions to handle import/export between R and the qualitative coding software Datavyu.
 
 ## Installation
 

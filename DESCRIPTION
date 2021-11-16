@@ -1,13 +1,13 @@
 Package: datavyur
 Version: 1.1.0
 Title: A package for working with Datavyu data
-Description: A set of functions to handle import/export between R and Datavyu.
+Description: A set of functions to handle import/export between R and the qualitative coding software Datavyu.
 Date: 2021-11-09
 Authors@R:
     c(person(
         "Joseph M.", "Burling", ,
         "josephburling@gmail.com",
-        c("aut", "cre")),
+        c("aut")),
       person(
         "Joshua", "Rosenberg", ,
         "jmrosenberg@utk.edu",
