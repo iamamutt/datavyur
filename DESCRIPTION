@@ -1,6 +1,6 @@
 Package: datavyur
 Version: 1.1.0
-Title: A package for working with Datavyu data
+Title: A Package for Working with Datavyu Data
 Description: A set of functions to handle import/export between R and the qualitative coding software Datavyu.
 Date: 2021-11-09
 Authors@R:
@@ -26,7 +26,8 @@ Imports:
 Suggests:
     knitr,
     dplyr,
-    testthat
+    testthat,
+    rmarkdown
 SystemRequirements:
     datavyu
 VignetteBuilder: knitr

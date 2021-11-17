@@ -35,53 +35,7 @@ And the development version from [GitHub](https://github.com/) with:
 devtools::install_github("iamamutt/datavyur")
 ```
 
-## Datavyu data structure
-
-It is important to understand the parts of one or more Datavyu files to understand how to use this R package. The structure is basically organized like so:
-
-- datavyu files
-  - column names
-    - cells
-      - standard fields <value>
-      - custom fields <code>
-
-For example, you may have several Datavyu files with multiple "columns" in each file, and in each column exists the standard `onset`, `offset`, and `ordinal` fields and their values, along with custom fields that hold their "codes."
-
-```
-|datavyu_file1.opf
-|- column_name1
-|  |- cell
-|     |- onset <ts>
-|     |- offset <ts>
-|     |- ordinal <int>
-|     |- custom_code_id1 <code>
-|     |- custom_code_id2 <code>
-|  |- cell
-|     |- onset <ts>
-|     |- offset <ts>
-|     |- ordinal <int>
-|     |- custom_code_id1 <code>
-|     |- custom_code_id2 <code>
-|  |- ...
-|- column_name2
-|  |- cell
-|     |- onset <ts>
-|     |- offset <ts>
-|     |- ordinal <int>
-|     |- custom_code_id1 <code>
-|     |- custom_code_id2 <code>
-|  |- ...
-|datavyu_file2.opf
-|- column_name1
-|  |- ...
-|- column_name2
-|  |- ...
-|...
-```
-
-
 ## Example
-
 
 This is a basic example which shows you how to import Datavyu data into R. First, load the package.
 
@@ -144,48 +98,4 @@ The first few rows are shown below.
 knitr::kable(head(child_data))
 ```
 
-## Horizontal alignment of Datavyu data
-
-```{r, warning=FALSE}
-main_list <- import_datavyu_to_list()
-```
-
-### Aligning data by timestamp
-
-To align data found in the folder `ex_data_dir` use the function `temporal_align`.
-
-```{r, warning=FALSE}
-time_aligned1 <- temporal_align(folder=ex_data_dir, fps=30, columns="childhands")
-```
-
-```{r, echo=FALSE}
-knitr::kable(head(time_aligned1))
-```
-
-### Aligning by ordinal value
-
-```{r, warning=FALSE}
-ord_aligned1 <- ordinal_align(folder=ex_data_dir, columns="parenthands")
-```
-
-```{r, echo=FALSE}
-knitr::kable(head(ord_aligned1))
-```
-
-
-## Vertical alignment of Datavyu data
-
-To stack several Datavyu columns' data vertically, use the function `vert_merge_datavyu_list`. This will convert all codes to characters so that they're able to exist in a single column.
-
-```{r}
-vert_data <- vert_merge_datavyu_list(main_list)
-```
-
-```{r, echo=FALSE}
-knitr::kable(rbind(head(vert_data), tail(vert_data)))
-```
-
-## Exporting Datavyu `.opf` files
-
-
-## Importing R data into Datavyu
+To learn more, see the Getting Started vignette.

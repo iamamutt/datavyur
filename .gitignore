@@ -28,3 +28,5 @@ scratch.R
 .vscode
 *.code-workspace
 .Rproj.user
+/doc/
+/Meta/
