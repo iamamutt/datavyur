@@ -29,7 +29,8 @@ function creates, so a Ruby script is generated to convert the \code{.csv} file 
 which can be loaded into Datavyu.
 }
 \examples{
-/dontrun{
+\dontrun{
+# these examples are not run to comport with CRAN policies
 # First get example data to use
 example_data <- fake_datavyu_data()
 

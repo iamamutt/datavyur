@@ -555,7 +555,8 @@ merge_nested <- function(outer_col, inner_col, ...) {
 #' "datavyur_export" containing the `.csv` file and the `.rb` script used within
 #' Datavyu, which is needed to convert the `.csv` to `.opf`.
 #' @examples
-#' /dontrun{
+#' \dontrun{
+#' # these examples are not run to comport with CRAN policies
 #' # First get example data to use
 #' example_data <- fake_datavyu_data()
 #'
