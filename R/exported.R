@@ -555,6 +555,7 @@ merge_nested <- function(outer_col, inner_col, ...) {
 #' "datavyur_export" containing the `.csv` file and the `.rb` script used within
 #' Datavyu, which is needed to convert the `.csv` to `.opf`.
 #' @examples
+#' /dontrun{
 #' # First get example data to use
 #' example_data <- fake_datavyu_data()
 #'
@@ -564,6 +565,7 @@ merge_nested <- function(outer_col, inner_col, ...) {
 #'
 #' # Export R list to a .csv file for importing into Datavyu
 #' r2datavyu(example_data, "~")
+#' }
 #' @export
 r2datavyu <- function(rlist, directory=".", filename="datavyur_export") {
   warn_txt <- paste0(

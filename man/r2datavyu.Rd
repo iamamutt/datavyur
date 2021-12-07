@@ -29,6 +29,7 @@ function creates, so a Ruby script is generated to convert the \code{.csv} file 
 which can be loaded into Datavyu.
 }
 \examples{
+/dontrun{
 # First get example data to use
 example_data <- fake_datavyu_data()
 
@@ -38,4 +39,5 @@ str(example_data)
 
 # Export R list to a .csv file for importing into Datavyu
 r2datavyu(example_data, "~")
+}
 }
