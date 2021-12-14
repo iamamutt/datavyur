@@ -1,7 +1,7 @@
 Package: datavyur
 Version: 1.1.0
-Title: A Package for Working with Datavyu Data
-Description: A set of functions to handle import/export between R and the qualitative coding software Datavyu.
+Title: Working with 'Datavyu' Data
+Description: Handle import/export between R and the qualitative coding software 'Datavyu' <https://datavyu.org/>.
 Date: 2021-11-09
 Authors@R:
     c(person(
@@ -33,3 +33,5 @@ SystemRequirements:
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 Roxygen: list(markdown=TRUE)
+License: GPL-3
+
